@@ -1,8 +1,8 @@
 package com.codeinvestigator.springbootsftpmessagehandler.controller;
 
-import com.codeinvestigator.springbootsftpmessagehandler.services.JobService;
-import com.codeinvestigator.springbootsftpmessagehandler.services.email.EmailBean;
-import com.codeinvestigator.springbootsftpmessagehandler.services.email.service.EmailService;
+import com.codeinvestigator.springbootsftpmessagehandler.job.JobService;
+import com.codeinvestigator.springbootsftpmessagehandler.email.EmailBean;
+import com.codeinvestigator.springbootsftpmessagehandler.email.service.EmailSender;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +27,7 @@ public class JobRestController {
     private JobService jobService;
 
     @Autowired
-    private EmailService emailService;
+    private EmailSender emailSender;
 
     @GetMapping({"/trigger/{dateString}"})
     public String triggerJob(@PathVariable(required = false) String dateString) throws ParseException {
@@ -56,7 +56,7 @@ public class JobRestController {
             email.setSubject("title here");
             email.setFrom("talentlab.donotreply@gmail.com");
             email.setTo(Arrays.asList("alvinlee001@live.com.my"));
-            emailService.sendEmail(email);
+            emailSender.sendEmail(email);
         } catch (Exception ex){
             log.error("", ex);
         }

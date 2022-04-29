@@ -1,6 +1,6 @@
-package com.codeinvestigator.springbootsftpmessagehandler.services.email.service;
+package com.codeinvestigator.springbootsftpmessagehandler.email.service;
 
-import com.codeinvestigator.springbootsftpmessagehandler.services.email.EmailBean;
+import com.codeinvestigator.springbootsftpmessagehandler.email.EmailBean;
 import freemarker.template.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +14,9 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 
 @Service
-public class EmailServiceImpl extends BaseEmailServiceImpl {
+public class EmailSenderImpl extends BaseEmailSenderImpl {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ClassUtils.getShortName(EmailServiceImpl.class));
+	private static final Logger LOGGER = LoggerFactory.getLogger(ClassUtils.getShortName(EmailSenderImpl.class));
 
 	@Override
 	public void sendEmail(EmailBean emailBean) throws Exception {

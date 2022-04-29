@@ -1,4 +1,4 @@
-package com.codeinvestigator.springbootsftpmessagehandler.services;
+package com.codeinvestigator.springbootsftpmessagehandler.sftp;
 
 import com.jcraft.jsch.*;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import java.io.OutputStream;
 
 @Service
 @Slf4j
-public class SftpServiceImpl implements SftpService {
+public class SftpServerConnectorImpl implements SftpServerConnector {
 
     @Value("${sftp.host}")
     private String host;

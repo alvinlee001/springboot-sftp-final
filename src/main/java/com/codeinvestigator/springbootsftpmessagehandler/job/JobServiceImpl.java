@@ -1,7 +1,8 @@
-package com.codeinvestigator.springbootsftpmessagehandler.services;
+package com.codeinvestigator.springbootsftpmessagehandler.job;
 
-import com.codeinvestigator.springbootsftpmessagehandler.services.email.EmailBean;
-import com.codeinvestigator.springbootsftpmessagehandler.services.email.service.EmailService;
+import com.codeinvestigator.springbootsftpmessagehandler.email.EmailBean;
+import com.codeinvestigator.springbootsftpmessagehandler.email.service.EmailSender;
+import com.codeinvestigator.springbootsftpmessagehandler.sftp.SftpServerConnector;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,10 +36,10 @@ public class JobServiceImpl implements JobService {
     private String emailFrom;
 
     @Autowired
-    private SftpService sftpService;
+    private SftpServerConnector sftpService;
 
     @Autowired
-    private EmailService emailService;
+    private EmailSender emailSender;
 
     @Override
     public void runJob(Date date) {
@@ -54,7 +55,7 @@ public class JobServiceImpl implements JobService {
             IsDownloadSuccess = sftpService.downloadFile(localPath+"/"+filename, jobPath+"/"+filename);
             if (!IsDownloadSuccess) {
                 log.error("Download File failed");
-                throw new RemoteServiceNotAvailableException();
+                throw new FileNotExistException();
             }
         } catch (Exception e) {
             throw new RemoteServiceNotAvailableException();
@@ -76,8 +77,7 @@ public class JobServiceImpl implements JobService {
             throw new FileProcessingException();
         }
 
-        // send email
-
+        // send success email
         EmailBean email= new EmailBean("email.ftl");
 
 
@@ -89,14 +89,15 @@ public class JobServiceImpl implements JobService {
         email.setFrom(emailFrom);
         email.setTo(Arrays.stream(emailTo.split(",")).collect(Collectors.toList()));
         try {
-            emailService.sendEmail(email);
-//                successMap.put(dateString, true);
+            emailSender.sendEmail(email);
             return;
         } catch (Exception e) {
             log.error("Fail to send email", e);
         }
 
     }
+
+
 
     @Override
     public void runFail(Exception originalException, Date date) {
@@ -110,18 +111,25 @@ public class JobServiceImpl implements JobService {
         email.setSubject("Job Failed");
         email.setTo(Arrays.stream(emailTo.split(",")).collect(Collectors.toList()));
         if (originalException instanceof RemoteServiceNotAvailableException) {
-            map.put("reason",  "SFTP File read fail.");
+            map.put("reason",  "SFTP Error: SFTP server might not be reachable. Please contact IT");
+        } else if (originalException instanceof  FileNotExistException){
+            map.put("reason",  "SFTP Error: File not downloadable or does not exist. Please contact IT");
         } else if (originalException instanceof  FileProcessingException){
-            map.put("reason",  "File Processing fail.");
+            map.put("reason",  "File Processing fail. Please contact IT.");
         } else {
-            map.put("reason",  "Unknown error, please refer to logs.");
+            map.put("reason",  "Unknown error. Please contact IT.");
         }
         email.setDatamap(map);
         try {
-            emailService.sendEmail(email);
+            emailSender.sendEmail(email);
         } catch (Exception e) {
             log.error("Fail to send failure email", e);
         }
+    }
+
+
+    class FileNotExistException extends RuntimeException {
+
     }
 
     class RemoteServiceNotAvailableException extends RuntimeException {

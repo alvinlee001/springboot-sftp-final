@@ -1,4 +1,4 @@
-package com.codeinvestigator.springbootsftpmessagehandler.services;
+package com.codeinvestigator.springbootsftpmessagehandler.job;
 
 import java.util.Date;
 

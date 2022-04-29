@@ -1,4 +1,4 @@
-package com.codeinvestigator.springbootsftpmessagehandler.services.email;
+package com.codeinvestigator.springbootsftpmessagehandler.email;
 
 import java.io.File;
 import java.io.Serializable;
