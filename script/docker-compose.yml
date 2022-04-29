@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  mysftpSecond:
+    image: atmoz/sftp
+    ports:
+      - "2222:22"
+    command: ["mike:password123:::upload"]
+    entrypoint: "/entrypoint"
+    volumes:
+      - ./upload:/home/mike/upload/done
+
