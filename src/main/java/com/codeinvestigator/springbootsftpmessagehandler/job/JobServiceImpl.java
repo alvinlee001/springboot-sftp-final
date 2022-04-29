@@ -90,6 +90,7 @@ public class JobServiceImpl implements JobService {
         email.setTo(Arrays.stream(emailTo.split(",")).collect(Collectors.toList()));
         try {
             emailSender.sendEmail(email);
+            fileForJob.delete();
             return;
         } catch (Exception e) {
             log.error("Fail to send email", e);
